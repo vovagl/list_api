@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import css from './post.module.css';
-import Comment from './Comment';
 
 
 
 
 
-export default function Post({ userPosts, setUsersMenuPosts, usersMenuPosts, showList, setShowList }) {
-    const [posts, setPosts] = useState([]);
-    const [bodyPost, setBodyPost] = useState(null);
+export default function Post({ userPosts, setUsersMenuPosts, setShowList, setDouble, bodyPost, setBodyPost,
+    setOpenForm, posts }) {
+    /*const [posts, setPosts] = useState([]);
 
     let rightNow = `posts?userId=${userPosts?.id}`
 
@@ -27,24 +26,27 @@ export default function Post({ userPosts, setUsersMenuPosts, usersMenuPosts, sho
             }
         }
         showPostUsers()
-    }, [rightNow])
+    }, [rightNow])*/
 
     const handleClick = (post) => {
         if (bodyPost && post.id === bodyPost.id) {
             setBodyPost(null)
+            setDouble(false)
         }
         else {
             setBodyPost(post)
+            setDouble(true)
         }
         setUsersMenuPosts(true)
         setShowList(false)
+        setOpenForm(false)
     }
 
     useEffect(() => {
         if (bodyPost?.userId !== userPosts.id) {
             setBodyPost(null)
         }
-    }, [userPosts.id, bodyPost?.userId])
+    }, [userPosts.id, bodyPost?.userId, setBodyPost])
 
     /*async function addPost() {
         try {
@@ -74,38 +76,34 @@ export default function Post({ userPosts, setUsersMenuPosts, usersMenuPosts, sho
     //addPost()*/
 
     return (
-        <>
-            <div className={css.block}>
-                {posts.length === 0 && <div className={css.no_post}><p>No posts yet</p></div>}
-                {posts.length > 0 &&
-                    <div className={css.container}>
-                        <h1>Posts:</h1>
-                        <table className={css.table}>
-                            <thead>
+        <div className={css.block}>
+            {posts.length === 0 && <div className={css.no_post}><p>No posts yet</p></div>}
+            {posts.length > 0 &&
+                <div className={css.container}>
+                    <h1>Posts:</h1>
+                    <table className={css.table}>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th><button></button></th>
+                            </tr>
+                        </thead>
+                        {posts.map((post =>
+                            <tbody key={post.id}>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Title</th>
-                                    <th><button></button></th>
+                                    <td>{post.id}</td>
+                                    <td>{post.title}</td>
+                                    <td className={css.button}>
+                                        <button className={bodyPost?.id !== post.id ? css.btn : css.btn_color} onClick={() => {
+                                            handleClick(post)
+                                        }}>{bodyPost?.id !== post.id ? 'Open' : 'Close'}</button></td>
                                 </tr>
-                            </thead>
-                            {posts.map((post =>
-                                <tbody key={post.id}>
-                                    <tr>
-                                        <td>{post.id}</td>
-                                        <td>{post.title}</td>
-                                        <td className={css.button}>
-                                            <button className={bodyPost?.id !== post.id ? css.btn : css.btn_color} onClick={() => {
-                                                handleClick(post);
-                                            }}>{bodyPost?.id !== post.id ? 'Open' : 'Close'}</button></td>
-                                    </tr>
-                                </tbody>
-                            ))}
-                        </table>
-                    </div>
-                }
-            </div>
-            {(bodyPost?.userId === userPosts.id) && <Comment bodyPost={bodyPost} userPosts={userPosts} />
+                            </tbody>
+                        ))}
+                    </table>
+                </div>
             }
-        </>
+        </div>
     )
 }

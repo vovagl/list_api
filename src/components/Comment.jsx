@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import css from './comment.module.css';
-import { useEffect } from 'react';
 import Form from './Form';
+import cx from 'classnames';
 
-
-export default function Comment({ bodyPost, userPosts }) {
+export default function Comment({ bodyPost, openForm, setOpenForm, double }) {
     const [commentText, setCommentText] = useState([]);
-    const [openForm, setOpenForm] = useState(false);
-
 
     //let rightNow = `posts/${bodyPost.id}`
     /* useEffect(() => {
@@ -27,25 +24,26 @@ export default function Comment({ bodyPost, userPosts }) {
          }
          showPostUsers()
      }, [rightNow])*/
-
-    let rightComments = `${bodyPost.id}`
+    let rightComments = `${bodyPost?.id}`
 
     useEffect(() => {
-        async function showCommentsUsers() {
-            try {
-                const response = await fetch(`https://mate.academy/students-api/comments?postId=${rightComments}`)
-                if (response.ok) {
-                    const commentsUser = await response.json()
-                    //console.log(commentsUser);
-                    setCommentText(commentsUser)
-                } else {
-                    console.log(response.status);
+        if (bodyPost) {
+            async function showCommentsUsers() {
+                try {
+                    const response = await fetch(`https://mate.academy/students-api/comments?postId=${rightComments}`)
+                    if (response.ok) {
+                        const commentsUser = await response.json()
+                        //console.log(commentsUser);
+                        setCommentText(commentsUser)
+                    } else {
+                        console.log(response.status);
+                    }
+                } catch (error) {
                 }
-            } catch (error) {
             }
+            showCommentsUsers()
         }
-        showCommentsUsers()
-    }, [rightComments])
+    }, [rightComments, bodyPost])
 
     const deleteComment = (id) => {
         setCommentText([...commentText.filter((comment) => comment.id !== id)])
@@ -67,47 +65,45 @@ export default function Comment({ bodyPost, userPosts }) {
         commentDelete()
     }
 
-
     const handleForm = () => {
-        setOpenForm(!openForm)
+        setOpenForm(true)
     }
 
-
     return (
-        <div className={css.right}>
-            < div className={css.box} >
-                <div className={css.block}>
-                    <h2 className={css.p}>#{bodyPost.id}: {bodyPost.title}</h2>
-                    <p className={css.p}>{bodyPost.body}</p>
-                </div>
-                {
-                    commentText.length !== 0 &&
-                    <>
-                        <div className={css.block}>
-                            <p className={css.title}>Comments :</p>
-                            {commentText.map(comment => (
-                                <div key={comment.id}>
-                                    < div className={css.name}><a href={`mailto:${comment.email}`}> {comment.name}</a>
-                                        <button className={css.delete} onClick={() => deleteComment(comment.id)}>x</button>
-                                    </div>
-
-                                    <div className={css.body}>{comment.body}</div>
-                                </div>))
-                            }
-                        </div>
-                        < button className={css.btn} onClick={handleForm}>Write a comment</button>
-                    </>
-                }
-                {
-                    commentText.length === 0 &&
-                    <div className={css.text}>
-                        <p className={css.title}>No comments yet</p>
-                        <button className={css.btn} onClick={handleForm}>Write a comment</button>
+        <div className={cx(css.right, double && css.rights)}>
+            {bodyPost &&
+                < div className={css.box} >
+                    <div className={css.block}>
+                        <h2 className={css.p}>#{bodyPost?.id}: {bodyPost?.title}</h2>
+                        <p className={css.p}>{bodyPost?.body}</p>
                     </div>
-                }
-                {openForm && <Form commentText={commentText} setCommentText={setCommentText} bodyPost={bodyPost} />}
-            </div >
+                    {
+                        commentText.length !== 0 &&
+                        <>
+                            <div className={css.block}>
+                                <p className={css.title}>Comments :</p>
+                                {commentText.map(comment => (
+                                    <div key={comment.id}>
+                                        < div className={css.name}><a href={`mailto:${comment.email}`}> {comment.name}</a>
+                                            <button className={css.delete} onClick={() => deleteComment(comment.id)}>x</button>
+                                        </div>
+                                        <div className={css.body}>{comment.body}</div>
+                                    </div>))
+                                }
+                            </div>
+                            < button className={css.btn} onClick={handleForm}>Write a comment</button>
+                        </>
+                    }
+                    {
+                        commentText.length === 0 &&
+                        <div className={css.text}>
+                            <p className={css.title}>No comments yet</p>
+                            <button className={css.btn} onClick={handleForm}>Write a comment</button>
+                        </div>
+                    }
+                    {openForm && <Form commentText={commentText} setCommentText={setCommentText} bodyPost={bodyPost} />}
+                </div >
+            }
         </div>
-
     )
 }

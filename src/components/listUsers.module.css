@@ -8,10 +8,8 @@
     color: #727171;
     border-radius: 4px;
     z-index: 10;
-}
-
-.box {
-    height: 100%;
+    top: 104px;
+    left: 42px;
 }
 
 p {
@@ -20,6 +18,6 @@ p {
 }
 
 .color {
-    background-color: rgb(124, 72, 247);
+    background-color: rgb(127, 140, 255);
     color: white;
 }
