@@ -1,29 +1,44 @@
+import { useEffect, useRef } from "react";
+import css from "./listUsers.module.css";
 
-import css from './listUsers.module.css';
+export default function ListUsers({
+  setIsShowList,
+  setCurrentUser,
+  usersList,
+  currentUser,
+}) {
+  const divRef = useRef();
+  useEffect(() => {
+    const closeUsersList = (e) => {
+      if (
+        divRef.current &&
+        !divRef.current.contains(e.target) &&
+        !e.target.className.includes("header_button")
+      ) {
+        setIsShowList(() => false);
+      }
+    };
+    document.addEventListener("mousedown", closeUsersList);
+    return () => {
+      document.removeEventListener("mousedown", closeUsersList);
+    };
+  }, []);
 
+  const composeUserPosts = (user) => {
+    setCurrentUser(user);
+    setIsShowList(false);
+  };
 
-export default function ListUsers({ setShowList, showList, setUserPosts, usersList, setUsersMenuPosts, usersMenuPosts, userPosts,
-    setDouble, posts }) {
-
-    const choiceUser = (user) => {
-        if (user.id === posts[0]?.userId) {
-            setDouble(true)
-        }
-        else {
-            setDouble(false)
-        }
-        setUserPosts(user);
-        setUsersMenuPosts(!usersMenuPosts);
-        setShowList(!showList);
-    }
-
-    return (
-        <div className={css.list_users}>
-            {showList && usersList.map((user =>
-                <div key={user.id} className={user.id === userPosts?.id ? css.color : css.pop}>
-                    <p onClick={() => choiceUser(user)}>{user.name}</p>
-                </div>
-            ))}
+  return (
+    <div className={css.list_users} ref={divRef}>
+      {usersList.map((user) => (
+        <div
+          key={user.id}
+          className={user.id === currentUser?.id ? css.color : null}
+        >
+          <p onClick={() => composeUserPosts(user)}>{user.name}</p>
         </div>
-    )
+      ))}
+    </div>
+  );
 }

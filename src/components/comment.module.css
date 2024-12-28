@@ -2,19 +2,16 @@
     border: 1px solid #f3f1f1;
     box-shadow: 0px 10px 20px #e5e3f0;
     border-radius: 0 0 7px 7px;
-    padding-left: 20px;
     width: 100%;
     padding-top: 10px;
     height: 100%;
+    margin-top: 20px;
 }
 
 .block {
     display: block;
     margin-bottom: 25px;
-}
-
-.text {
-    margin-bottom: 0;
+    padding-left: 20px;
 }
 
 .p {
@@ -82,25 +79,22 @@ a {
     margin-right: 20px;
     font-size: 11px;
 }
-
-.right {
-    width: 100%;
+.right{
+    transition: width .8s ease;
+    width: 0%;
 }
 
-@media (min-width:769px) {
-    .rights {
-        margin-left: 20px;
-        animation-name: raising;
-        animation-duration: 1s;
-    }
-}
-
-@keyframes raising {
-    0% {
-        width: 0%;
-    }
-
-    100% {
+@media (max-width:768px){
+    .right{
         width: 100%;
+    }
+}
+@media (min-width:769px) {
+    .open {
+        margin-left: 20px;
+        width: 100%;
+    }
+    .box{
+        margin-top: 0;
     }
 }

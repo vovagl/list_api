@@ -1,148 +1,176 @@
-import React, { useEffect, useState } from 'react'
-import css from './form.module.css';
+import React, { useEffect, useState } from "react";
+import css from "./form.module.css";
+import SpinnerSmall from "./Spinner_small";
 
-export default function Form({ commentText, setCommentText, bodyPost }) {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [textComment, setTextComment] = useState('');
-    const [nameError, setNameError] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [textError, setTextError] = useState('');
-    const [formValid, setFormValid] = useState(false);
+export default function Form({ comments, setComments, currentPost }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [newComment, setNewComment] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [textError, setTextError] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isNewCommentLoading, setIsNewCommentLoading] = useState(false);
 
-    const nameChange = (event) => {
-        setName(event.target.value)
-    };
-    const emailChange = (event) => {
-        setEmail(event.target.value)
-    };
-    const textareaChange = (event) => {
-        setTextComment(event.target.value)
-    };
+  const nameChange = (event) => {
+    setName(event.target.value);
+  };
+  const emailChange = (event) => {
+    setEmail(event.target.value);
+  };
+  const textareaChange = (event) => {
+    setNewComment(event.target.value);
+  };
 
-    useEffect(() => {
-        if (formValid) {
-            if (name.length < 1) {
-                setNameError('Name is required')
-            }
-            else {
-                setNameError('')
-            }
-        }
-        if (!formValid) {
-            setNameError('')
-        }
-    }, [name, formValid])
-
-    useEffect(() => {
-        if (formValid) {
-            if (email.length < 1) {
-                setEmailError('Email is required')
-            }
-            else {
-                setEmailError('')
-            }
-        }
-        if (!formValid) {
-            setEmailError('')
-        }
-    }, [email, formValid])
-
-    useEffect(() => {
-        if (formValid) {
-            if (textComment.length < 1) {
-                setTextError('Enter some text')
-            }
-            else {
-                setTextError('')
-                setFormValid(false)
-            }
-        }
-        if (!formValid) {
-            setTextError('')
-        }
-    }, [textComment, formValid])
-
-    const todoComment = (event) => {
-        event.preventDefault()
-        setFormValid(true)
-        if (name.length > 0 && email.length > 0 && textComment.length > 0) {
-            setFormValid(false)
-            async function addComment() {
-                try {
-                    const response = await fetch('https://mate.academy/students-api/comments', {
-                        method: "POST",
-                        body: JSON.stringify(
-                            {
-                                "postId": bodyPost.id,
-                                'name': `${name}`,
-                                'email': `${email}`,
-                                'body': `${textComment}`
-                            }
-                        ),
-                        headers: {
-                            'Content-Type': 'application/json; charset=utf-8',
-                        }
-                    })
-                    if (response.ok) {
-                        const comment = await response.json()
-                        setCommentText([...commentText, comment])
-                        //console.log(comment);
-                    } else {
-                        console.log(response.status);
-                    }
-                } catch (error) {
-                }
-            }
-            addComment()
-            setTextComment('')
-        }
+  useEffect(() => {
+    if (isFormValid) {
+      if (name.length < 1) {
+        setNameError("Name is required");
+      } else {
+        setNameError("");
+      }
     }
-
-    const clearComment = () => {
-        setName('')
-        setEmail('')
-        setTextComment('')
-        setFormValid(false)
+    if (!isFormValid) {
+      setNameError("");
     }
+  }, [name, isFormValid]);
 
-    return (
-        <form className={css.comment}>
-            <div className={css.wrapper}>
-                <label>
-                    <h4>Author Name</h4>
-                </label>
-                <div className={css.box}>
-                    <input type='text' name='name' placeholder='Name Surname' value={name} onChange={nameChange} className={nameError && css.input_error} ></input>
-                    {nameError && <p className={css.error}>{nameError}</p>}
-                </div>
-            </div >
-            <div className={css.wrapper}>
-                <label>
-                    <h4>Author Email</h4>
-                </label>
-                <div className={css.box}>
-                    <input type='text' name='email' placeholder='email@test.com' value={email} onChange={emailChange} className={emailError && css.input_error}></input>
-                    {emailError && <p className={css.error}>{emailError}</p>}
-                </div>
-            </div>
-            <div className={css.wrapper}>
-                <label>
-                    <h4>Comment Text</h4>
-                </label>
-                <div className={css.box}>
-                    <textarea type='text' name='textarea' className={textError ? css.textarea_error : css.textarea} placeholder='Type comment here' value={textComment} onChange={textareaChange} ></textarea>
-                    {textError && <p className={css.error}>{textError}</p>}
-                </div>
-            </div>
-            <div className={css.btn}>
-                <div>
-                    <button type='submit' className={css.button_add} onClick={todoComment}>Add</button>
-                </div>
-                <div>
-                    <button type='reset' className={css.button_clear} onClick={clearComment}>Clear</button>
-                </div>
-            </div>
-        </form >
-    )
+  useEffect(() => {
+    if (isFormValid) {
+      if (email.length < 1) {
+        setEmailError("Email is required");
+      } else {
+        setEmailError("");
+      }
+    }
+    if (!isFormValid) {
+      setEmailError("");
+    }
+  }, [email, isFormValid]);
+
+  useEffect(() => {
+    if (isFormValid) {
+      if (newComment.length < 1) {
+        setTextError("Enter some text");
+      } else {
+        setTextError("");
+        setIsFormValid(false);
+      }
+    }
+    if (!isFormValid) {
+      setTextError("");
+    }
+  }, [newComment, isFormValid]);
+
+  const addComment = (event) => {
+    event.preventDefault();
+    setIsFormValid(true);
+    if (name.length > 0 && email.length > 0 && newComment.length > 0) {
+      setIsFormValid(false);
+      async function submitComment() {
+        if (isNewCommentLoading) return;
+        setIsNewCommentLoading(true);
+        try {
+          const response = await fetch(
+            "https://mate.academy/students-api/comments",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                postId: currentPost.id,
+                name: `${name}`,
+                email: `${email}`,
+                body: `${newComment}`,
+              }),
+              headers: {
+                "Content-Type": "application/json; charset=utf-8",
+              },
+            }
+          );
+          if (response.ok) {
+            const comment = await response.json();
+            setComments([...comments, comment]);
+          } else {
+            console.log(response.status);
+          }
+        } catch (error) {
+        } finally {
+          setIsNewCommentLoading(false);
+        }
+      }
+      submitComment();
+      setNewComment("");
+    }
+  };
+
+  const clearForm = () => {
+    setName("");
+    setEmail("");
+    setNewComment("");
+    setIsFormValid(false);
+  };
+
+  return (
+    <form className={css.comment}>
+      <div className={css.wrapper}>
+        <label>
+          <h4>Author Name</h4>
+        </label>
+        <div className={css.box}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Name Surname"
+            value={name}
+            onChange={nameChange}
+            className={nameError && css.input_error}
+          ></input>
+          {nameError && <p className={css.error}>{nameError}</p>}
+        </div>
+      </div>
+      <div className={css.wrapper}>
+        <label>
+          <h4>Author Email</h4>
+        </label>
+        <div className={css.box}>
+          <input
+            type="text"
+            name="email"
+            placeholder="email@test.com"
+            value={email}
+            onChange={emailChange}
+            className={emailError && css.input_error}
+          ></input>
+          {emailError && <p className={css.error}>{emailError}</p>}
+        </div>
+      </div>
+      <div className={css.wrapper}>
+        <label>
+          <h4>Comment Text</h4>
+        </label>
+        <div className={css.box}>
+          <textarea
+            type="text"
+            name="textarea"
+            className={textError ? css.textarea_error : css.textarea}
+            placeholder="Type comment here"
+            value={newComment}
+            onChange={textareaChange}
+          ></textarea>
+          {textError && <p className={css.error}>{textError}</p>}
+        </div>
+      </div>
+      <div className={css.btn}>
+        <div>
+          <button type="submit" className={css.button_add} onClick={addComment}>
+            {isNewCommentLoading ? <SpinnerSmall /> : "Add"}
+          </button>
+        </div>
+        <div>
+          <button type="reset" className={css.button_clear} onClick={clearForm}>
+            Clear
+          </button>
+        </div>
+      </div>
+    </form>
+  );
 }

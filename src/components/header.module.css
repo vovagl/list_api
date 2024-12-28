@@ -5,7 +5,6 @@
 
 .container {
     width: 100%;
-
     display: grid;
 }
 
@@ -62,24 +61,16 @@ span {
     margin-left: 20px;
 }
 
+.left {
+    transition: width 1s;
+}
+
 @media (min-width:769px) {
     .flex {
         display: flex;
     }
-
-    @keyframes single {
-        from {
-            width: 50%;
-        }
-
-        to {
-            width: 100%;
-        }
+    .container{
+        display: flex;
     }
-
-    .lefts {
-        margin-right: 20px;
-        animation-name: single;
-        animation-duration: 1s;
-    }
+    
 }
