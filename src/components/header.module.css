@@ -8,10 +8,6 @@
     display: grid;
 }
 
-.left {
-    width: 100%;
-}
-
 .wrapper {
     margin-top: 20px;
 }
@@ -62,15 +58,11 @@ span {
 }
 
 .left {
-    transition: width 1s;
+    width: 100%;
 }
 
 @media (min-width:769px) {
-    .flex {
-        display: flex;
-    }
     .container{
         display: flex;
     }
-    
 }

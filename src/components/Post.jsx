@@ -3,14 +3,10 @@ import css from "./post.module.css";
 import Spinner from "./Spinner";
 
 export default function Post({ currentUser, currentPost, setCurrentPost }) {
-  const [currentUserPosts, setCurrentUserPosts] = useState([]);
-  const [isCurrentUserPostsLoading, setIsCurrentUserPostsLoading] =
-    useState(false);
+  const [currentUserPosts, setCurrentUserPosts] = useState(null);
 
   useEffect(() => {
     async function getPostsUser() {
-      if (isCurrentUserPostsLoading) return;
-      setIsCurrentUserPostsLoading(true);
       try {
         const response = await fetch(
           `https://mate.academy/students-api/posts?userId=${currentUser.id}`
@@ -21,11 +17,9 @@ export default function Post({ currentUser, currentPost, setCurrentPost }) {
         } else {
           console.log(response.status);
         }
-      } catch (error) {
-      } finally {
-        setIsCurrentUserPostsLoading(false);
-      }
+      } catch (error) {}
     }
+    setCurrentUserPosts(null);
     getPostsUser();
   }, [currentUser]);
 
@@ -45,54 +39,50 @@ export default function Post({ currentUser, currentPost, setCurrentPost }) {
 
   return (
     <>
-      {isCurrentUserPostsLoading && <Spinner />}
-      {!isCurrentUserPostsLoading && (
-        <div className={css.block}>
-          {currentUserPosts.length === 0 && (
-            <div className={css.no_post}>
-              <p>No posts yet</p>
-            </div>
-          )}
-          {currentUserPosts.length > 0 && (
-            <div className={css.container}>
-              <h1>Posts:</h1>
-              <table className={css.table}>
-                <thead>
+      {!currentUserPosts && <Spinner />}
+      <div className={css.block}>
+        {currentUserPosts?.length === 0 && (
+          <div className={css.no_post}>
+            <p>No posts yet</p>
+          </div>
+        )}
+        {currentUserPosts?.length > 0 && (
+          <div className={css.container}>
+            <h1>Posts:</h1>
+            <table className={css.table}>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>
+                    <button></button>
+                  </th>
+                </tr>
+              </thead>
+              {currentUserPosts.map((post) => (
+                <tbody key={post.id}>
                   <tr>
-                    <th>#</th>
-                    <th>Title</th>
-                    <th>
-                      <button></button>
-                    </th>
+                    <td>{post.id}</td>
+                    <td>{post.title}</td>
+                    <td className={css.button}>
+                      <button
+                        className={
+                          currentPost?.id !== post.id ? css.btn : css.btn_color
+                        }
+                        onClick={() => {
+                          handleCurrentPost(post);
+                        }}
+                      >
+                        {currentPost?.id !== post.id ? "Open" : "Close"}
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                {currentUserPosts.map((post) => (
-                  <tbody key={post.id}>
-                    <tr>
-                      <td>{post.id}</td>
-                      <td>{post.title}</td>
-                      <td className={css.button}>
-                        <button
-                          className={
-                            currentPost?.id !== post.id
-                              ? css.btn
-                              : css.btn_color
-                          }
-                          onClick={() => {
-                            handleCurrentPost(post);
-                          }}
-                        >
-                          {currentPost?.id !== post.id ? "Open" : "Close"}
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                ))}
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+                </tbody>
+              ))}
+            </table>
+          </div>
+        )}
+      </div>
     </>
   );
 }

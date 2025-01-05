@@ -31,7 +31,7 @@ export default function ListUsers({
 
   return (
     <div className={css.list_users} ref={divRef}>
-      {usersList.map((user) => (
+      {usersList?.map((user) => (
         <div
           key={user.id}
           className={user.id === currentUser?.id ? css.color : null}

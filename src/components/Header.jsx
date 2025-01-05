@@ -4,12 +4,17 @@ import ListUsers from "./ListUsers";
 import Post from "./Post";
 import Icon from "../vip_icon_264042.webp";
 import Comment from "./Comment";
+import useSound from "use-sound";
+import singl from "./Magneto_—_Vuela,_Vuela_Voyage,_Voyage_www_lightaudio_ru.mp3";
 
 export default function Header() {
-  const [usersList, setUsersList] = useState([]);
+  const [usersList, setUsersList] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [isShowList, setIsShowList] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
+  const [play, setPlay] = useState(false);
+
+  const [sound] = useSound(singl, { loop: true });
 
   useEffect(() => {
     async function getListUsers() {
@@ -28,8 +33,15 @@ export default function Header() {
 
   const openListUsers = () => {
     setIsShowList((cur) => !cur);
+    setPlay(true);
   };
 
+  useEffect(() => {
+    if (play) {
+      sound();
+    }
+  }, [play, sound]);
+  
   return (
     <main className={css.section}>
       <div className={css.block}>

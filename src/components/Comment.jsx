@@ -5,33 +5,25 @@ import cx from "classnames";
 import Spinner from "./Spinner";
 
 export default function Comment({ currentPost }) {
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState(null);
   const [isOpenForm, setIsOpenForm] = useState(false);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
   useEffect(() => {
-    if (currentPost) {
-      async function getComments() {
-        setIsCommentsLoading(false);
-        if (isCommentsLoading) return;
-        setIsCommentsLoading(true);
-        try {
-          const response = await fetch(
-            `https://mate.academy/students-api/comments?postId=${currentPost.id}`
-          );
-          if (response.ok) {
-            const commentsUsers = await response.json();
-            setComments(commentsUsers);
-          } else {
-            console.log(response.status);
-          }
-        } catch (error) {
-        } finally {
-          setIsCommentsLoading(false);
+    async function getComments() {
+      try {
+        const response = await fetch(
+          `https://mate.academy/students-api/comments?postId=${currentPost.id}`
+        );
+        if (response.ok) {
+          const commentsUsers = await response.json();
+          setComments(commentsUsers);
+        } else {
+          console.log(response.status);
         }
-      }
-      getComments();
+      } catch (error) {}
     }
+    setComments(null);
+    getComments();
   }, [currentPost]);
 
   const removeComment = (id) => {
@@ -72,32 +64,30 @@ export default function Comment({ currentPost }) {
             </h2>
             <p className={css.p}>{currentPost?.body}</p>
           </div>
-          {isCommentsLoading && <Spinner />}
-          {comments.length !== 0 && !isCommentsLoading && (
-            <>
-              <div className={css.block}>
-                <p className={css.title}>Comments :</p>
-                {comments.map((comment) => (
-                  <div key={comment.id}>
-                    <div className={css.name}>
-                      <a href={`mailto:${comment.email}`}> {comment.name}</a>
-                      <button
-                        className={css.delete}
-                        onClick={() => removeComment(comment.id)}
-                      >
-                        x
-                      </button>
-                    </div>
-                    <div className={css.body}>{comment.body}</div>
+          {!comments && <Spinner />}
+          {comments && comments?.length !== 0 && (
+            <div className={css.block}>
+              <p className={css.title}>Comments :</p>
+              {comments?.map((comment) => (
+                <div key={comment.id}>
+                  <div className={css.name}>
+                    <a href={`mailto:${comment.email}`}> {comment.name}</a>
+                    <button
+                      className={css.delete}
+                      onClick={() => removeComment(comment.id)}
+                    >
+                      x
+                    </button>
                   </div>
-                ))}
-                <button className={css.btn} onClick={handleForm}>
-                  Write a comment
-                </button>
-              </div>
-            </>
+                  <div className={css.body}>{comment.body}</div>
+                </div>
+              ))}
+              <button className={css.btn} onClick={handleForm}>
+                Write a comment
+              </button>
+            </div>
           )}
-          {comments.length === 0 && !isCommentsLoading && (
+          {comments?.length === 0 && (
             <div className={css.block}>
               <p className={css.title}>No comments yet</p>
               <button className={css.btn} onClick={handleForm}>
@@ -105,7 +95,6 @@ export default function Comment({ currentPost }) {
               </button>
             </div>
           )}
-
           {isOpenForm && (
             <Form
               comments={comments}

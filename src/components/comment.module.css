@@ -80,7 +80,7 @@ a {
     font-size: 11px;
 }
 .right{
-    transition: width .8s ease;
+    transition: width 1s ease;
     width: 0%;
 }
 
